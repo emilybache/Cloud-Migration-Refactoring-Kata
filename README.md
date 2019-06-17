@@ -1,5 +1,5 @@
-Thumbnail Refactoring Kata
-==========================
+Cloud Migration Refactoring Kata
+================================
 
 Inspired by some code I saw recently in the wild.
 
@@ -11,6 +11,7 @@ Instructions
 ------------
 
 You may change anything (all of existing code and tests) except:
+	
 	- The signature of the public methods in "ContentService"
 	- The "Content" class
 
@@ -31,10 +32,10 @@ Notes on IntelliJ
 
 I found IntelliJ didn't detect that this project uses Java 11 despite it saying so in the pom file. You might have to set the project language level in two places:
 
-File | Project Structure | Project Language level
-File | Project Structure | Modules | Language level
+	File | Project Structure | Project Language level
+	File | Project Structure | Modules | Language level
 
 And the project bytecode version:
 
-Preferences -> Build, Execution, Development -> Compiler -> Java Compiler
+	Preferences -> Build, Execution, Development -> Compiler -> Java Compiler
 
