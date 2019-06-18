@@ -6,12 +6,14 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.io.File;
 import java.io.InputStream;
 
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -19,7 +21,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ContentService.class, ImageUtil.class, FileUtil.class, GoogleStorageUtil.class, AwsUtil.class})
+@PrepareForTest({ContentService.class, ImageUtil.class, FileUtil.class, GoogleStorageUtil.class})
 public class ContentServiceTest {
     @Test
     public void getBytes() throws Exception {
@@ -37,6 +39,24 @@ public class ContentServiceTest {
 
         // Assert
         assertNotNull(result);
+
+    }
+
+    @Test
+    public void getBytes_with_Exception() throws Exception {
+        // Arrange
+        ContentService contentService = new ContentService();
+        ContentService contentServiceSpy = PowerMockito.spy(contentService);
+
+        doThrow(new RuntimeException("failed to read file bytes")).when(contentServiceSpy, "getFileBytes", any());
+
+        Content contentSpy = Mockito.spy(Content.class);
+
+        // Act
+        byte[] result = contentServiceSpy.getBytes(contentSpy);
+
+        // Assert
+        assertNull(result);
 
     }
 
@@ -65,6 +85,44 @@ public class ContentServiceTest {
 
         // Act
         InputStream result = contentServiceSpy.generateAndSaveThumbnailToTempDisk(contentSpy);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void getThumbnailTempFileHelperInstance() throws Exception {
+        // Arrange
+        ContentService contentService = new ContentService();
+
+        // Act
+        ContentThumbnailTempFileHelper result = Whitebox.<ContentThumbnailTempFileHelper> invokeMethod(contentService, "getThumbnailTempFileHelperInstance");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void getContentTempFileHelperInstance() throws Exception {
+        // Arrange
+        ContentService contentService = new ContentService();
+
+        // Act
+        ContentTempFileHelper result = Whitebox.<ContentTempFileHelper> invokeMethod(contentService, "getContentTempFileHelperInstance");
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void getFileBytes() throws Exception {
+        // Arrange
+        ContentService contentService = new ContentService();
+        Content contentSpy = Mockito.spy(Content.class);
+        GoogleStorageUtil storageSpy = Mockito.spy(GoogleStorageUtil.class);
+        PowerMockito.mockStatic(GoogleStorageUtil.class);
+        when(GoogleStorageUtil.getInstance()).thenReturn(storageSpy);
+        doReturn(new byte[8]).when(storageSpy).getBytes(any());
+
+        // Act
+        byte[] result = Whitebox.<byte[]> invokeMethod(contentService, "getFileBytes", contentSpy);
 
         assertNotNull(result);
     }
