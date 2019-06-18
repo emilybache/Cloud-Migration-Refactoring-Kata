@@ -49,7 +49,8 @@ public class ContentService {
     /*
     Find file content on:
     1) local disk (not uploaded yet - fast access for new assets)
-    2) Google Storage
+    2) AWS (primary storage)
+    3) Google (fallback for older assets)
     */
     private byte[] getFileBytes(Content content) {
         byte[] result = null;
@@ -58,9 +59,39 @@ public class ContentService {
             if (tempFile != null && tempFile.exists()) {
                 result = FileUtil.readAsByteArray(tempFile);
             } else {
-                result = GoogleStorageUtil.getInstance().getBytes(content);
-
+                result = tryGettingBytesFromAws(content);
+                if (result == null) {
+                    result = tryGettingBytesFromGoogle(content);
+                }
             }
+        }
+        return result;
+    }
+
+    private byte[] tryGettingBytesFromAws(Content content) {
+        byte[] result = null;
+
+        if (content.isUploadedToAws()) {
+            result = AwsUtil.getInstance().getBytes(content);
+
+        }
+        return result;
+    }
+
+    private byte[] tryGettingBytesFromGoogle(Content content) {
+        byte[] result = null;
+
+        if (content.isUploadedToGoogle()) {
+            result = GoogleStorageUtil.getInstance().getBytes(content);
+
+            if (result != null) {
+                content.checkAndUpdateFileSize(result.length);
+
+                if (!content.isUploadedToAws()) {
+                    AwsUtil.getInstance().upload(content, result);
+                }
+            }
+
         }
         return result;
     }
