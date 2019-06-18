@@ -19,23 +19,11 @@ The aim is to get at least 80% test coverage of the ContentService class, includ
 
 Note: some methods throw an Exception instead of having an implementation. You should not call these methods from your unit tests, they are tested elsewhere (outside of the scope of this exercise).
 
-What you can learn from this Kata
----------------------------------
 
-- How to use test doubles (The existing code makes heavy use of these, you may want to redesign these tests)
-- How to test Singletons (or replace them with something more testable)
-- How to refactor code that is covered with tests that are quite tightly coupled to the implementation
-- How counterproductive it can be to mandate 80% test coverage
+Questions you can learn about by doing this Kata
+-------------------------------------------------
 
-Notes on IntelliJ
------------------
-
-I found IntelliJ didn't detect that this project uses Java 11 despite it saying so in the pom file. You might have to set the project language level in two places:
-
-	File | Project Structure | Project Language level
-	File | Project Structure | Modules | Language level
-
-And the project bytecode version:
-
-	Preferences -> Build, Execution, Development -> Compiler -> Java Compiler
-
+- What is a Partial Mock and when should you use one?
+- How should you test private methods?
+- How should you test Singleton classes?
+- Does mandating 80% test coverage mean you will have good tests that will catch programming errors?
