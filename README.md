@@ -27,3 +27,8 @@ Questions you can learn about by doing this Kata
 - How should you test private methods?
 - How should you test Singleton classes?
 - Does mandating 80% test coverage mean you will have good tests that will catch programming errors?
+
+Note
+----
+
+There is another branch called 'original' which shows the imagined state of the code before the cloud migration started.
