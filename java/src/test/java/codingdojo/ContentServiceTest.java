@@ -112,16 +112,45 @@ public class ContentServiceTest {
         assertNotNull(result);
     }
 
-    @Ignore("fails since we migrated from Google to AWS")
     @Test
-    public void getFileBytes() throws Exception {
+    public void getFileBytesFromAWS() throws Exception {
         // Arrange
         ContentService contentService = new ContentService();
         Content contentSpy = Mockito.spy(Content.class);
+        when(contentSpy.isUploadedToAws()).thenReturn(true);
+
         GoogleStorageUtil storageSpy = Mockito.spy(GoogleStorageUtil.class);
         PowerMockito.mockStatic(GoogleStorageUtil.class);
         when(GoogleStorageUtil.getInstance()).thenReturn(storageSpy);
         doReturn(new byte[8]).when(storageSpy).getBytes(any());
+
+        AwsUtil awsSpy = Mockito.spy(AwsUtil.class);
+        PowerMockito.mockStatic(AwsUtil.class);
+        when(AwsUtil.getInstance()).thenReturn(awsSpy);
+        doReturn(new byte[8]).when(awsSpy).getBytes(any());
+
+        // Act
+        byte[] result = Whitebox.<byte[]> invokeMethod(contentService, "getFileBytes", contentSpy);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void getFileBytesFromGoogle() throws Exception {
+        // Arrange
+        ContentService contentService = new ContentService();
+        Content contentSpy = Mockito.spy(Content.class);
+        when(contentSpy.isUploadedToGoogle()).thenReturn(true);
+
+        GoogleStorageUtil storageSpy = Mockito.spy(GoogleStorageUtil.class);
+        PowerMockito.mockStatic(GoogleStorageUtil.class);
+        when(GoogleStorageUtil.getInstance()).thenReturn(storageSpy);
+        doReturn(new byte[8]).when(storageSpy).getBytes(any());
+
+        AwsUtil awsSpy = Mockito.spy(AwsUtil.class);
+        PowerMockito.mockStatic(AwsUtil.class);
+        when(AwsUtil.getInstance()).thenReturn(awsSpy);
+        doNothing().when(awsSpy).upload(any(), any());
 
         // Act
         byte[] result = Whitebox.<byte[]> invokeMethod(contentService, "getFileBytes", contentSpy);
